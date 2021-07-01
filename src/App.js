@@ -94,7 +94,7 @@ function App() {
                 eventHandlers={clickHandler}
               >
                 <Tooltip sticky>
-                  {e.properties.nom} - {e.properties.population}K individus
+                  {e.properties.nom} - {e.properties.population}m d'individus
                 </Tooltip>
               </Polygon>
             ))}
@@ -109,7 +109,7 @@ function App() {
                 eventHandlers={clickHandler}
               >
                 <Tooltip sticky>
-                  {e.properties.nom} - {e.properties.population}m d'individus
+                  {e.properties.nom} - {e.properties.population}K individus
                 </Tooltip>
               </Polygon>
             ))}
