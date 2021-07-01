@@ -1,18 +1,17 @@
-import { useEffect, useMemo, useState, useRef } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   MapContainer,
   TileLayer,
   Polygon,
   Tooltip,
-  useMapEvents,
-  Marker,
-  Popup,
+  GeoJSON,
 } from "react-leaflet";
 import MenuItem from "@material-ui/core/MenuItem";
 import FormControl from "@material-ui/core/FormControl";
 import Select from "@material-ui/core/Select";
 import geodepartement from "./geo-departement.json";
 import georegion from "./geo-region.json";
+import europeMap from "./countries.geo.json";
 import "./App.css";
 
 function App() {
@@ -47,8 +46,6 @@ function App() {
     []
   );
 
-
-
   //inversion des données géo au premier render
   useEffect(() => {
     georegion.features.map((e) => reverse(e.geometry.coordinates));
@@ -72,51 +69,24 @@ function App() {
           </Select>
         </FormControl>
       </div>
-      {map === "region" ? (
-        <div>
-          <MapContainer
-            center={[47.0, 2.0]}
-            zoom={6}
-            dragging={true}
-            doubleClickZoom={false}
-            scrollWheelZoom={true}
-            attributionControl={false}
-            zoomControl={false}
-          >
-            <TileLayer
-              attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
-              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-            />
+
+      <MapContainer
+        center={[47.0, 2.0]}
+        zoom={6}
+        minZoom={6}
+        dragging={true}
+        doubleClickZoom={false}
+        scrollWheelZoom={true}
+        attributionControl={false}
+        zoomControl={false}
+      >
+        <TileLayer
+          attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        />
+        {map === "region" ? (
+          <div>
             {georegion.features.map((e) => (
-              <Polygon
-                key={e.properties.code}
-                pathOptions={color}
-                positions={e.geometry.coordinates}
-                eventHandlers={clickHandler}
-              >
-                <Tooltip sticky>
-                  {e.properties.nom} - {e.properties.population}m d'individus
-                </Tooltip>
-              </Polygon>
-            ))}
-          </MapContainer>
-        </div>
-      ) : (
-        <div>
-          <MapContainer
-            center={[47.0, 2.0]}
-            zoom={6}
-            dragging={true}
-            doubleClickZoom={false}
-            scrollWheelZoom={true}
-            attributionControl={false}
-            zoomControl={false}
-          >
-            <TileLayer
-              attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
-              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-            />
-            {geodepartement.features.map((e) => (
               <Polygon
                 key={e.properties.code}
                 pathOptions={color}
@@ -128,9 +98,34 @@ function App() {
                 </Tooltip>
               </Polygon>
             ))}
-          </MapContainer>
-        </div>
-      )}
+          </div>
+        ) : (
+          <div>
+            {geodepartement.features.map((e) => (
+              <Polygon
+                key={e.properties.code}
+                pathOptions={color}
+                positions={e.geometry.coordinates}
+                eventHandlers={clickHandler}
+              >
+                <Tooltip sticky>
+                  {e.properties.nom} - {e.properties.population}m d'individus
+                </Tooltip>
+              </Polygon>
+            ))}
+          </div>
+        )}
+
+        <GeoJSON
+          data={europeMap}
+          style={() => ({
+            color: "#9e9e9e",
+            weight: 0.5,
+            fillColor: "#bdbdbd",
+            fillOpacity: 0.55,
+          })}
+        />
+      </MapContainer>
     </div>
   );
 }
